@@ -1,7 +1,7 @@
-#include "TaskManager.hpp"
+#include "Task.hpp"
 #include "User.hpp"
 
 int main()
 {
-  return 0;
+  User user("Frazzer", "admin");
 }

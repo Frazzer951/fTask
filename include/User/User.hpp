@@ -1,5 +1,8 @@
 #include <string>
 #include <utility>
+#include <vector>
+
+#include "Task.hpp"
 
 class User
 {

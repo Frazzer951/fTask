@@ -22,12 +22,12 @@ if(NOT googletest_POPULATED)
 endif()
 
 set( Sources
-    TaskManagerTests.cpp
+    TaskTests.cpp
     UserTests.cpp
 )
 
 add_executable(${PROJECT_NAME} ${Sources})
-target_link_libraries(${PROJECT_NAME} gtest_main TaskManager_lib User_lib)
+target_link_libraries(${PROJECT_NAME} gtest_main Task_lib User_lib)
 
 gtest_add_tests(TARGET ${PROJECT_NAME})
 

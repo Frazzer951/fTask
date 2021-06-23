@@ -2,7 +2,7 @@
 #include <string>
 #include <utility>
 
-class TaskManager
+class Task
 {
   std::string _name;
   std::string _desc;
@@ -10,8 +10,8 @@ class TaskManager
 
 public:
   // Constructors
-  TaskManager();
-  TaskManager( std::string name, std::string desc );
+  Task();
+  Task( std::string name, std::string desc );
 
   // Getters
   [[nodiscard]] std::string name() const { return _name; }

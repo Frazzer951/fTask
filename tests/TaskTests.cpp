@@ -1,23 +1,23 @@
-#include "TaskManager.hpp"
+#include "Task.hpp"
 
 #include "gtest/gtest.h"
 
-TEST( TaskManager, Constructor )
+TEST( Task, Constructor )
 {
-  ASSERT_NO_THROW( TaskManager( "Task", "This is a test task" ) );
+  ASSERT_NO_THROW( Task( "Task", "This is a test task" ) );
 }
 
-struct TaskManagerTest : public ::testing::Test
+struct TaskTest : public ::testing::Test
 {
-  TaskManager tm;
+  Task tm;
 
-  TaskManagerTest()
+  TaskTest()
   {
-    tm = TaskManager( "Test", "This is a test Task" );
+    tm = Task( "Test", "This is a test Task" );
   }
 };
 
-TEST_F( TaskManagerTest, Name )
+TEST_F( TaskTest, Name )
 {
   EXPECT_EQ( "Test", tm.name() );
 
@@ -26,7 +26,7 @@ TEST_F( TaskManagerTest, Name )
   EXPECT_EQ( "New Name", tm.name() );
 }
 
-TEST_F( TaskManagerTest, Description )
+TEST_F( TaskTest, Description )
 {
   EXPECT_EQ( "This is a test Task", tm.desc() );
 
@@ -35,7 +35,7 @@ TEST_F( TaskManagerTest, Description )
   EXPECT_EQ( "New Desc", tm.desc() );
 }
 
-TEST_F( TaskManagerTest, Completed )
+TEST_F( TaskTest, Completed )
 {
   EXPECT_FALSE( tm.completed() );
 
