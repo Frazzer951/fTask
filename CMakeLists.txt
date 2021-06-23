@@ -15,8 +15,11 @@ list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 include(ClangFormat)
 enable_testing()
 
-add_library(${PROJECT_NAME}_lib "src/TaskManager.cpp")
-target_include_directories(${PROJECT_NAME}_lib PUBLIC include/TaskManager)
+add_library(TaskManager_lib "src/TaskManager.cpp")
+target_include_directories(TaskManager_lib PUBLIC include/TaskManager)
+
+add_library(User_lib "src/User.cpp")
+target_include_directories(User_lib PUBLIC include/User)
 
 set( Sources
      "src/main.cpp"
@@ -31,7 +34,7 @@ include_directories(include)
 add_subdirectory(tests)
 
 add_executable(${PROJECT_NAME} ${Sources} ${Headers})
-target_link_libraries(${PROJECT_NAME} TaskManager_lib)
+target_link_libraries(${PROJECT_NAME} TaskManager_lib User_lib)
 
 file(GLOB_RECURSE files
      "src/*.cpp"

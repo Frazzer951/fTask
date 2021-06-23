@@ -1,4 +1,5 @@
 #include "TaskManager.hpp"
+#include "User.hpp"
 
 int main()
 {

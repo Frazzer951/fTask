@@ -4,7 +4,7 @@
 
 TEST( TaskManager, Constructor )
 {
-  EXPECT_NO_THROW( TaskManager( "Task", "This is a test task" ) );
+  ASSERT_NO_THROW( TaskManager( "Task", "This is a test task" ) );
 }
 
 struct TaskManagerTest : public ::testing::Test
