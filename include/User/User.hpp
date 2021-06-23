@@ -18,10 +18,10 @@ public:
   User( std::string username, std::string password );
 
   // Getter
-  [[nodiscard]] std::string username() const { return _username; }
-  std::vector<Task>         tasks() const { return _tasks; }
-  std::vector<Task>         incomplete() const;
-  std::vector<Task>         complete() const;
+  [[nodiscard]] std::string       username() const { return _username; }
+  [[nodiscard]] std::vector<Task> tasks() const { return _tasks; }
+  [[nodiscard]] std::vector<Task> incomplete() const;
+  [[nodiscard]] std::vector<Task> complete() const;
 
 
   // Setter
@@ -30,7 +30,7 @@ public:
 
   // Functions
   bool check_pass( const std::string & guess );
-  void addTask( std::string name, std::string desc );
-  void addTask( Task task );
-  void completeTask( Task task );
+  void addTask( const std::string & name, const std::string & desc );
+  void addTask( const Task & task );
+  void completeTask( const Task & task );
 };

@@ -1,8 +1,8 @@
 #pragma once
 
+#include <iostream>
 #include <string>
 #include <utility>
-#include <iostream>
 
 class Task
 {

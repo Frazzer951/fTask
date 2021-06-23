@@ -12,7 +12,7 @@ std::vector<Task> User::incomplete() const
 {
   std::vector<Task> imcomplete;
 
-  for( auto task : _tasks )
+  for( const auto & task : _tasks )
   {
     if( !task.completed() )
       imcomplete.push_back( task );
@@ -25,7 +25,7 @@ std::vector<Task> User::complete() const
 {
   std::vector<Task> complete;
 
-  for( auto task : _tasks )
+  for( const auto & task : _tasks )
   {
     if( task.completed() )
       complete.push_back( task );
@@ -39,17 +39,17 @@ bool User::check_pass( const std::string & guess )
   return guess == _password;
 }
 
-void User::addTask( std::string name, std::string desc )
+void User::addTask( const std::string & name, const std::string & desc )
 {
   _tasks.emplace_back( name, desc );
 }
 
-void User::addTask( Task task )
+void User::addTask( const Task & task )
 {
   _tasks.push_back( task );
 }
 
-void User::completeTask( Task task )
+void User::completeTask( const Task & task )
 {
   auto _task = std::find( _tasks.begin(), _tasks.end(), task );
 

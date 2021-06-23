@@ -3,5 +3,5 @@
 
 int main()
 {
-  User user("Frazzer", "admin");
+  User user( "Frazzer", "admin" );
 }
