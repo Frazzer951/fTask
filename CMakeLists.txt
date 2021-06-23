@@ -27,9 +27,9 @@ include_directories(include)
 
 add_subdirectory(tests)
 
-add_executable(${PROJECT_NAME} ${Sources} )
+add_executable(${PROJECT_NAME} ${Sources} ${Headers})
 
-add_library(${PROJECT_NAME}_lib ${Sources} )
+add_library(${PROJECT_NAME}_lib ${Sources} ${Headers} )
 target_include_directories(${PROJECT_NAME}_lib PUBLIC include)
 
 target_clangformat_setup(${PROJECT_NAME})
