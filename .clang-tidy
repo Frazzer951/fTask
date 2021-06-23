@@ -1,0 +1,30 @@
+---
+Checks:             '-*,
+                    bugprone-*,
+                    clang-analyzer-*,
+                    clang-diagnostic-*,
+                    concurrency-*,
+                    cppcoreguidelines-*,
+                    llvm-*,
+                    misc-*,
+                    modernize-*,
+                    performance-*,
+                    portability-*,
+                    readability-*,
+                    -readability-magic-numbers,
+                    -cppcoreguidelines-avoid-magic-numbers,
+                    -llvm-header-guard,
+                    -modernize-use-trailing-return-type,
+                    -misc-no-recursion,
+                    -readability-braces-around-statements,
+                    -concurrency-mt-unsafe,
+                    -misc-non-private-member-variables-in-classes,
+                    -cppcoreguidelines-non-private-member-variables-in-classes,
+                    -cppcoreguidelines-avoid-non-const-global-variables,
+                    -cppcoreguidelines-owning-memory'
+WarningsAsErrors:   ''
+HeaderFilterRegex:  '.hpp'
+FormatStyle:        file
+User:               'Frazzer'
+...
+

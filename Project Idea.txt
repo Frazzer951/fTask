@@ -1,0 +1,8 @@
+Task Managment System:
+	- Can have multiple users with a login system
+	- Add tasks
+	- Complete Tasks
+	- Tasks
+		- Name
+		- Description
+		- Due Date (Optional)
