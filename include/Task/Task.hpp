@@ -1,6 +1,8 @@
+#pragma once
 
 #include <string>
 #include <utility>
+#include <iostream>
 
 class Task
 {
@@ -25,3 +27,17 @@ public:
 
   // Functions
 };
+
+inline bool operator==( const Task & lhs, const Task & rhs ) { return ( lhs.name() == rhs.name() ) && ( lhs.desc() == rhs.desc() ) && ( lhs.completed() == rhs.completed() ); }
+
+inline std::ostream & operator<<( std::ostream & os, const Task & obj )
+{
+  std::string completed = ( obj.completed() ) ? "True" : "False";
+
+  std::string output = "Name: " + obj.name() + '\n'
+                     + "Description: " + obj.desc() + '\n'
+                     + "Completed: " + completed + '\n';
+
+  os << output;
+  return os;
+}
