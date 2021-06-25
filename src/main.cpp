@@ -1,12 +1,45 @@
+#include <iomanip>
 #include <iostream>
 #include <map>
 
 #include "Task.hpp"
 #include "User.hpp"
 
+void printTasks( const User& user, const std::string& option = "" )
+{
+  std::vector<Task> tasks;
+  if( option == "incomplete" )
+  {
+    tasks = user.incomplete();
+  }
+  else if( option == "complete" )
+  {
+    tasks = user.complete();
+  }
+  else
+  {
+    tasks = user.tasks();
+  }
+  std::cout << "Task Name:     Task Description:\n";
+  for( const Task& task : tasks )
+  {
+    std::cout << std::setw( 15 ) << std::left << task.name();
+    std::cout << task.desc() << '\n';
+  }
+}
+
 int main()
 {
   User user1( "Frazzer", "admin" );
+  Task t1( "Test 1", "Tests Task 1" );
+  Task t2( "Test 2", "Tests Task 2" );
+  Task t3( "Test 3", "Tests Task 3" );
+  Task t4( "Test 4", "Tests Task 4" );
+  t1.completed( true );
+  user1.addTask( t1 );
+  user1.addTask( t2 );
+  user1.addTask( t3 );
+  user1.addTask( t4 );
 
   std::map<std::string, User> users;
   users["Frazzer"] = user1;
@@ -43,8 +76,8 @@ int main()
   }
   while( !valid_pass );
 
-  int  choice;
-  bool exit = false;
+  int  choice = 0;
+  bool exit   = false;
 
   while( !exit )
   {
@@ -61,6 +94,12 @@ int main()
     {
       case( 0 ):
         exit = true;
+        break;
+      case( 1 ):
+        printTasks( user, "incomplete" );
+        break;
+      case( 2 ):
+        printTasks( user );
         break;
       default: continue;
     }
