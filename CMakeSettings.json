@@ -11,6 +11,40 @@
       "buildCommandArgs": "",
       "ctestCommandArgs": "",
       "enableClangTidyCodeAnalysis": true
+    },
+    {
+      "name": "x64-Release",
+      "generator": "Ninja",
+      "configurationType": "Release",
+      "inheritEnvironments": [ "msvc_x64_x64" ],
+      "buildRoot": "${projectDir}\\build\\${name}",
+      "installRoot": "${projectDir}\\build\\install\\${name}",
+      "cmakeCommandArgs": "",
+      "buildCommandArgs": "",
+      "ctestCommandArgs": "",
+      "enableClangTidyCodeAnalysis": true
+    },
+  {
+      "name": "x64-Debug-GCC",
+      "generator": "Ninja",
+      "configurationType": "Debug",
+      "buildRoot": "${projectDir}\\build\\${name}",
+      "installRoot": "${projectDir}\\build\\install\\${name}",
+      "cmakeCommandArgs": "-DCMAKE_C_COMPILER=\"gcc.exe\" -DCMAKE_CXX_COMPILER=\"g++.exe\"",
+      "buildCommandArgs": "",
+      "ctestCommandArgs": "",
+      "enableClangTidyCodeAnalysis": true
+    },
+    {
+      "name": "x64-Debug-CLANG",
+      "generator": "Ninja",
+      "configurationType": "Debug",
+      "buildRoot": "${projectDir}\\build\\${name}",
+      "installRoot": "${projectDir}\\build\\install\\${name}",
+      "cmakeCommandArgs": "-DCMAKE_C_COMPILER=\"clang.exe\" -DCMAKE_CXX_COMPILER=\"clang++.exe\"",
+      "buildCommandArgs": "",
+      "ctestCommandArgs": "",
+      "enableClangTidyCodeAnalysis": true
     }
   ]
 }
