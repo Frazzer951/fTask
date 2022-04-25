@@ -1,0 +1,8 @@
+#brace_style = "PreferSameLine"
+#indent_style = "Block"
+max_width = 127
+#normalize_comments = true
+#reorder_impl_items = true
+reorder_imports = true
+reorder_modules = true
+tab_spaces = 4
