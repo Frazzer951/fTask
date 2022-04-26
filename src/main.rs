@@ -99,6 +99,11 @@ enum Commands {
         ///ID of the task to complete
         id: Option<u32>,
     },
+    /// Mark a task as incomplete
+    UnComplete {
+        ///ID of the task to complete
+        id: Option<u32>,
+    },
     /// Remove a task
     Remove {},
 }
@@ -171,6 +176,17 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             }
         }
 
+        Commands::UnComplete { id } => {
+            if id.is_some() {
+                let id = id.unwrap();
+                conn.execute("UPDATE task SET completed = 0 WHERE id = ?1", params![id])?;
+            } else {
+                print_all_tasks(&conn, false, true)?;
+                print!("Enter ID of task to complete: ");
+                let id: u32 = get_user_input().parse()?;
+                conn.execute("UPDATE task SET completed = 0 WHERE id = ?1", params![id])?;
+            }
+        }
         Commands::Remove {} => todo!(),
     }
 
