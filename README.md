@@ -2,7 +2,9 @@
 
 ## Current Planned Features
 
-- Add/Remove Tasks
-- Mark tasks as complete and put them in their own section
-- Each task has a priority that is ues to sort it
-- Each task has a Name, Description, Priority
+- [x] Add/Remove Tasks
+- [x] Mark tasks as complete and put them in their own section
+- [x] Each task has a priority that is uses to sort it
+- [x] Each task has a Name, Description, Priority
+- [ ] Get Next Task
+- [ ] Add a UI
