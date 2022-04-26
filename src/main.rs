@@ -20,7 +20,6 @@ fn get_all_tasks(conn: Connection) -> Result<Vec<Task>, Box<dyn std::error::Erro
     let mut stmt = conn.prepare("SELECT id, priority, name, description FROM task")?;
     let task_iter = stmt.query_map([], |row| {
         Ok(Task {
-            id: row.get(0)?,
             priority: row.get(1)?,
             name: row.get(2)?,
             description: row.get(3)?,
@@ -52,7 +51,6 @@ enum Commands {
 
 #[derive(Debug)]
 struct Task {
-    id: i32,
     priority: u32,
     name: String,
     description: String,
@@ -84,8 +82,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         Commands::Tasks {} => {
             let task_iter = get_all_tasks(conn)?;
             println!("Here");
-            for person in task_iter {
-                println!("Found person {:?}", person);
+            for task in task_iter {
+                println!("{:?}: {} - {}", task.priority, task.name, task.description);
             }
         }
         Commands::AddTask {} => {
