@@ -9,6 +9,7 @@ fn get_user_input() -> String {
     let mut s = String::new();
     let _ = stdout().flush();
     stdin().read_line(&mut s).expect("Did not enter a correct string");
+    // Remove any endline characters
     if let Some('\n') = s.chars().next_back() {
         s.pop();
     }
@@ -20,7 +21,9 @@ fn get_user_input() -> String {
 
 /// Get a vector of all the tasks in the database
 fn get_all_tasks(conn: Connection) -> Result<Vec<Task>, Box<dyn std::error::Error>> {
+    // Query the database
     let mut stmt = conn.prepare("SELECT id, priority, name, description, completed FROM task")?;
+    // Get all the responces
     let task_iter = stmt.query_map([], |row| {
         Ok(Task {
             id: row.get(0)?,
@@ -30,10 +33,13 @@ fn get_all_tasks(conn: Connection) -> Result<Vec<Task>, Box<dyn std::error::Erro
             completed: row.get(4)?,
         })
     })?;
+    // Convert the responces into a vector of tasks
     let mut tasks = vec![];
     for task in task_iter {
         tasks.push(task.unwrap());
     }
+
+    // Sort the tasks
     tasks.sort_by(|a, b| a.priority.cmp(&b.priority));
 
     Ok(tasks)
@@ -41,15 +47,20 @@ fn get_all_tasks(conn: Connection) -> Result<Vec<Task>, Box<dyn std::error::Erro
 
 /// Print out all of the tasks
 fn print_all_tasks(conn: Connection, all: Option<bool>, completed: Option<bool>) -> Result<(), Box<dyn std::error::Error>> {
+    // unwrap optional variables
     let all = all.unwrap_or(false);
     let completed = completed.unwrap_or(false);
+    // Get all the tasks
     let task_iter = get_all_tasks(conn)?;
+    // Get the length of the longest name for formatting
     let mut length = 0;
     for task in &task_iter {
         if all || (completed == task.completed) {
             length = std::cmp::max(length, task.name.len());
         }
     }
+
+    // Print out all of the tasks
     println!("ID-PR: {:0length$} - DESCRIPTION", "NAME");
     for task in task_iter {
         if all || (completed == task.completed) {
@@ -86,7 +97,9 @@ enum Commands {
     AddTask {},
     /// Reset the tasks database
     Reset {},
+    /// Complete a task
     Complete {},
+    /// Remove a task
     Remove {},
 }
 
