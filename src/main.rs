@@ -16,7 +16,7 @@ fn get_user_input() -> String {
     s
 }
 
-fn get_all_tasks(conn: Connection) -> Result<(Vec<Task>), Box<dyn std::error::Error>> {
+fn get_all_tasks(conn: Connection) -> Result<Vec<Task>, Box<dyn std::error::Error>> {
     let mut stmt = conn.prepare("SELECT id, priority, name, description FROM task")?;
     let task_iter = stmt.query_map([], |row| {
         Ok(Task {
@@ -30,6 +30,8 @@ fn get_all_tasks(conn: Connection) -> Result<(Vec<Task>), Box<dyn std::error::Er
     for task in task_iter {
         tasks.push(task.unwrap());
     }
+    tasks.sort_by(|a, b| a.priority.cmp(&b.priority));
+
     Ok(tasks)
 }
 
@@ -81,7 +83,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     match &cli.command {
         Commands::Tasks {} => {
             let task_iter = get_all_tasks(conn)?;
-
+            println!("Here");
             for person in task_iter {
                 println!("Found person {:?}", person);
             }
