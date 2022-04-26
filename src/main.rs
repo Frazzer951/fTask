@@ -20,7 +20,7 @@ fn get_user_input() -> String {
 }
 
 /// Get a vector of all the tasks in the database
-fn get_all_tasks(conn: Connection) -> Result<Vec<Task>, Box<dyn std::error::Error>> {
+fn get_all_tasks(conn: &Connection) -> Result<Vec<Task>, Box<dyn std::error::Error>> {
     // Query the database
     let mut stmt = conn.prepare("SELECT id, priority, name, description, completed FROM task")?;
     // Get all the responces
@@ -46,10 +46,7 @@ fn get_all_tasks(conn: Connection) -> Result<Vec<Task>, Box<dyn std::error::Erro
 }
 
 /// Print out all of the tasks
-fn print_all_tasks(conn: Connection, all: Option<bool>, completed: Option<bool>) -> Result<(), Box<dyn std::error::Error>> {
-    // unwrap optional variables
-    let all = all.unwrap_or(false);
-    let completed = completed.unwrap_or(false);
+fn print_all_tasks(conn: &Connection, all: bool, completed: bool) -> Result<(), Box<dyn std::error::Error>> {
     // Get all the tasks
     let task_iter = get_all_tasks(conn)?;
     // Get the length of the longest name for formatting
@@ -85,7 +82,7 @@ struct Cli {
 #[derive(Subcommand)]
 enum Commands {
     /// List tasks
-    Tasks {
+    List {
         #[clap(short, long, group = "show")]
         /// Show all tasks
         all: bool,
@@ -98,7 +95,10 @@ enum Commands {
     /// Reset the tasks database
     Reset {},
     /// Complete a task
-    Complete {},
+    Complete {
+        ///ID of the task to complete
+        id: Option<u32>,
+    },
     /// Remove a task
     Remove {},
 }
@@ -136,8 +136,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     // Run the specified command
     match &cli.command {
-        Commands::Tasks { all, completed } => {
-            print_all_tasks(conn, Some(*all), Some(*completed))?;
+        Commands::List { all, completed } => {
+            print_all_tasks(&conn, *all, *completed)?;
         }
         Commands::AddTask {} => {
             print!("Enter task name: ");
@@ -159,7 +159,18 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             let _ = conn.close();
             std::fs::remove_file(sqlite_path)?;
         }
-        Commands::Complete {} => todo!(),
+        Commands::Complete { id } => {
+            if id.is_some() {
+                let id = id.unwrap();
+                conn.execute("UPDATE task SET completed = 1 WHERE id = ?1", params![id])?;
+            } else {
+                print_all_tasks(&conn, false, false)?;
+                print!("Enter ID of task to complete: ");
+                let id: u32 = get_user_input().parse()?;
+                conn.execute("UPDATE task SET completed = 1 WHERE id = ?1", params![id])?;
+            }
+        }
+
         Commands::Remove {} => todo!(),
     }
 
