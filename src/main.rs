@@ -2,7 +2,7 @@ use clap::{Parser, Subcommand};
 use platform_dirs::AppDirs;
 use rusqlite::{params, Connection, Result};
 use std::io::{stdin, stdout, Write};
-use text_io::read;
+
 
 fn get_user_input() -> String {
     let mut s = String::new();
@@ -44,7 +44,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let cli = Cli::parse();
 
     // Create SQLite directory
-    let app_dirs = AppDirs::new(Some("task_manager"), false).unwrap();
+    let app_dirs = AppDirs::new(Some("ftask"), false).unwrap();
     let mut sqlite_path = app_dirs.data_dir;
     std::fs::create_dir_all(&sqlite_path)?;
     sqlite_path.push("tasks.sqlite");
