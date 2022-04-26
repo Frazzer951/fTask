@@ -3,7 +3,6 @@ use platform_dirs::AppDirs;
 use rusqlite::{params, Connection, Result};
 use std::io::{stdin, stdout, Write};
 
-
 fn get_user_input() -> String {
     let mut s = String::new();
     let _ = stdout().flush();
@@ -15,6 +14,23 @@ fn get_user_input() -> String {
         s.pop();
     }
     s
+}
+
+fn get_all_tasks(conn: Connection) -> Result<(Vec<Task>), Box<dyn std::error::Error>> {
+    let mut stmt = conn.prepare("SELECT id, priority, name, description FROM task")?;
+    let task_iter = stmt.query_map([], |row| {
+        Ok(Task {
+            id: row.get(0)?,
+            priority: row.get(1)?,
+            name: row.get(2)?,
+            description: row.get(3)?,
+        })
+    })?;
+    let mut tasks = vec![];
+    for task in task_iter {
+        tasks.push(task.unwrap());
+    }
+    Ok(tasks)
 }
 
 #[derive(Parser)]
@@ -64,18 +80,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Run the specified command
     match &cli.command {
         Commands::Tasks {} => {
-            let mut stmt = conn.prepare("SELECT id, priority, name, description FROM task")?;
-            let task_iter = stmt.query_map([], |row| {
-                Ok(Task {
-                    id: row.get(0)?,
-                    priority: row.get(1)?,
-                    name: row.get(2)?,
-                    description: row.get(3)?,
-                })
-            })?;
+            let task_iter = get_all_tasks(conn)?;
 
             for person in task_iter {
-                println!("Found person {:?}", person.unwrap());
+                println!("Found person {:?}", person);
             }
         }
         Commands::AddTask {} => {
