@@ -3,7 +3,6 @@ use platform_dirs::AppDirs;
 use rusqlite::{params, Connection, Result};
 use std::io::{stdin, stdout, Write};
 
-
 fn get_user_input() -> String {
     let mut s = String::new();
     let _ = stdout().flush();
