@@ -1,6 +1,6 @@
 use std::io::{stdin, stdout, Write};
 
-use clap::{Parser, Subcommand};
+use clap::{ArgGroup, Parser, Subcommand};
 use platform_dirs::AppDirs;
 use rusqlite::{params, Connection, Result};
 
@@ -103,7 +103,17 @@ enum Commands {
         completed: bool,
     },
     /// Add a new task
-    AddTask {},
+    AddTask {
+        #[clap(short, long)]
+        /// Name of the new task
+        name: Option<String>,
+        #[clap(short, long)]
+        /// Description of task
+        description: Option<String>,
+        #[clap(short, long)]
+        /// Priority of the task
+        priority: Option<u32>,
+    },
     /// Reset the tasks database
     Reset {},
     /// Complete a task
@@ -165,15 +175,34 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         Commands::List { all, completed } => {
             print_all_tasks(&conn, *all, *completed, 0)?;
         }
-        Commands::AddTask {} => {
-            print!("Enter task name: ");
-            let task_name = get_user_input();
+        Commands::AddTask {
+            name,
+            description,
+            priority,
+        } => {
+            let mut task_name = String::new();
+            if let Some(name) = name {
+                task_name = name.to_string();
+            } else {
+                print!("Enter task name: ");
+                task_name = get_user_input();
+            }
 
-            print!("Enter task description: ");
-            let task_description = get_user_input();
+            let mut task_description = String::new();
+            if let Some(description) = description {
+                task_description = description.to_string();
+            } else {
+                print!("Enter task description: ");
+                task_description = get_user_input();
+            }
 
-            print!("Enter task priority (Lower is Higher Priority): ");
-            let task_priority: u32 = get_user_input().parse()?;
+            let mut task_priority: u32;
+            if let Some(priority) = priority {
+                task_priority = *priority;
+            } else {
+                print!("Enter task priority (Lower is Higher Priority): ");
+                task_priority = get_user_input().parse()?;
+            }
 
             // Insert task into database
             conn.execute(
