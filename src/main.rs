@@ -1,6 +1,6 @@
 use std::io::{stdin, stdout, Write};
 
-use clap::{ArgGroup, Parser, Subcommand};
+use clap::{Parser, Subcommand};
 use platform_dirs::AppDirs;
 use rusqlite::{params, Connection, Result};
 
@@ -180,29 +180,26 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             description,
             priority,
         } => {
-            let mut task_name = String::new();
-            if let Some(name) = name {
-                task_name = name.to_string();
+            let task_name = if let Some(name) = name {
+                name.to_string()
             } else {
                 print!("Enter task name: ");
-                task_name = get_user_input();
-            }
+                get_user_input()
+            };
 
-            let mut task_description = String::new();
-            if let Some(description) = description {
-                task_description = description.to_string();
+            let task_description = if let Some(description) = description {
+                description.to_string()
             } else {
                 print!("Enter task description: ");
-                task_description = get_user_input();
-            }
+                get_user_input()
+            };
 
-            let mut task_priority: u32;
-            if let Some(priority) = priority {
-                task_priority = *priority;
+            let task_priority: u32 = if let Some(priority) = priority {
+                *priority
             } else {
                 print!("Enter task priority (Lower is Higher Priority): ");
-                task_priority = get_user_input().parse()?;
-            }
+                get_user_input().parse()?
+            };
 
             // Insert task into database
             conn.execute(
