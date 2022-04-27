@@ -118,18 +118,18 @@ enum Commands {
     Reset {},
     /// Complete a task
     Complete {
-        /// ID of the task
-        id: Option<u32>,
+        /// IDs of tasks (Optional)
+        ids: Vec<u32>,
     },
     /// Mark a task as incomplete
     UnComplete {
-        /// ID of the task
-        id: Option<u32>,
+        /// IDs of tasks (Optional)
+        ids: Vec<u32>,
     },
     /// Remove a task
     Remove {
-        /// ID of the task
-        id: Option<u32>,
+        /// IDs of tasks (Optional)
+        ids: Vec<u32>,
     },
     /// Get the next task
     Next {
@@ -211,10 +211,11 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             let _ = conn.close();
             std::fs::remove_file(sqlite_path)?;
         }
-        Commands::Complete { id } => {
-            if id.is_some() {
-                let id = id.unwrap();
-                conn.execute("UPDATE task SET completed = 1 WHERE id = ?1", params![id])?;
+        Commands::Complete { ids } => {
+            if !ids.is_empty() {
+                for id in ids {
+                    conn.execute("UPDATE task SET completed = 1 WHERE id = ?1", params![id])?;
+                }
             } else {
                 print_all_tasks(&conn, false, false, 0)?;
                 print!("Enter ID of task to complete: ");
@@ -223,10 +224,11 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             }
         }
 
-        Commands::UnComplete { id } => {
-            if id.is_some() {
-                let id = id.unwrap();
-                conn.execute("UPDATE task SET completed = 0 WHERE id = ?1", params![id])?;
+        Commands::UnComplete { ids } => {
+            if !ids.is_empty() {
+                for id in ids {
+                    conn.execute("UPDATE task SET completed = 0 WHERE id = ?1", params![id])?;
+                }
             } else {
                 print_all_tasks(&conn, false, true, 0)?;
                 print!("Enter ID of task to complete: ");
@@ -234,10 +236,11 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 conn.execute("UPDATE task SET completed = 0 WHERE id = ?1", params![id])?;
             }
         }
-        Commands::Remove { id } => {
-            if id.is_some() {
-                let id = id.unwrap();
-                conn.execute("DELETE FROM task WHERE id = ?1", params![id])?;
+        Commands::Remove { ids } => {
+            if !ids.is_empty() {
+                for id in ids {
+                    conn.execute("DELETE FROM task WHERE id = ?1", params![id])?;
+                }
             } else {
                 print_all_tasks(&conn, true, false, 0)?;
                 print!("Enter ID of task to remove: ");
