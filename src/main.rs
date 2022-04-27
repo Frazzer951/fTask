@@ -34,10 +34,7 @@ fn get_all_tasks(conn: &Connection) -> Result<Vec<Task>, Box<dyn std::error::Err
         })
     })?;
     // Convert the responces into a vector of tasks
-    let mut tasks = vec![];
-    for task in task_iter {
-        tasks.push(task.unwrap());
-    }
+    let mut tasks = task_iter.into_iter().map(|x| x.unwrap()).collect::<Vec<Task>>();
 
     // Sort the tasks
     tasks.sort_by(|a, b| a.priority.cmp(&b.priority));
@@ -46,25 +43,40 @@ fn get_all_tasks(conn: &Connection) -> Result<Vec<Task>, Box<dyn std::error::Err
 }
 
 /// Print out all of the tasks
-fn print_all_tasks(conn: &Connection, all: bool, completed: bool) -> Result<(), Box<dyn std::error::Error>> {
+fn print_all_tasks(conn: &Connection, all: bool, completed: bool, mut amount: u32) -> Result<(), Box<dyn std::error::Error>> {
     // Get all the tasks
     let task_iter = get_all_tasks(conn)?;
+
+    if amount == 0 {
+        amount = task_iter.len() as u32;
+    }
+
     // Get the length of the longest name for formatting
     let mut length = 0;
+    let mut i = 0;
     for task in &task_iter {
+        if i >= amount {
+            break;
+        }
         if all || (completed == task.completed) {
             length = std::cmp::max(length, task.name.len());
+            i += 1;
         }
     }
 
     // Print out all of the tasks
     println!("ID-PR: {:0length$} - DESCRIPTION", "NAME");
+    i = 0;
     for task in task_iter {
+        if i >= amount {
+            break;
+        }
         if all || (completed == task.completed) {
             println!(
                 "{:02}-{:02}: {:0length$} - {}",
                 task.id, task.priority, task.name, task.description
             );
+            i += 1;
         }
     }
 
@@ -109,6 +121,12 @@ enum Commands {
         /// ID of the task
         id: Option<u32>,
     },
+    /// Get the next task
+    Next {
+        #[clap(default_value = "1")]
+        /// Number of tasks to display
+        number: u32,
+    },
 }
 
 #[derive(Debug)]
@@ -145,7 +163,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Run the specified command
     match &cli.command {
         Commands::List { all, completed } => {
-            print_all_tasks(&conn, *all, *completed)?;
+            print_all_tasks(&conn, *all, *completed, 0)?;
         }
         Commands::AddTask {} => {
             print!("Enter task name: ");
@@ -172,7 +190,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 let id = id.unwrap();
                 conn.execute("UPDATE task SET completed = 1 WHERE id = ?1", params![id])?;
             } else {
-                print_all_tasks(&conn, false, false)?;
+                print_all_tasks(&conn, false, false, 0)?;
                 print!("Enter ID of task to complete: ");
                 let id: u32 = get_user_input().parse()?;
                 conn.execute("UPDATE task SET completed = 1 WHERE id = ?1", params![id])?;
@@ -184,7 +202,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 let id = id.unwrap();
                 conn.execute("UPDATE task SET completed = 0 WHERE id = ?1", params![id])?;
             } else {
-                print_all_tasks(&conn, false, true)?;
+                print_all_tasks(&conn, false, true, 0)?;
                 print!("Enter ID of task to complete: ");
                 let id: u32 = get_user_input().parse()?;
                 conn.execute("UPDATE task SET completed = 0 WHERE id = ?1", params![id])?;
@@ -195,11 +213,14 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 let id = id.unwrap();
                 conn.execute("DELETE FROM task WHERE id = ?1", params![id])?;
             } else {
-                print_all_tasks(&conn, true, false)?;
+                print_all_tasks(&conn, true, false, 0)?;
                 print!("Enter ID of task to remove: ");
                 let id: u32 = get_user_input().parse()?;
                 conn.execute("DELETE FROM task WHERE id = ?1", params![id])?;
             }
+        }
+        Commands::Next { number } => {
+            print_all_tasks(&conn, false, false, *number)?;
         }
     }
 
