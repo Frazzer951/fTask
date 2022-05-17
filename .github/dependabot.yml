@@ -1,6 +1,3 @@
-# Configuration: https://dependabot.com/docs/config-file/
-# Docs: https://docs.github.com/en/github/administering-a-repository/keeping-your-dependencies-updated-automatically
-
 version: 2
 
 updates:
@@ -9,17 +6,19 @@ updates:
     schedule:
       interval: "daily"
     allow:
-      - dependency-type: "all"
+      - dependency-type: "direct"
     commit-message:
       prefix: ":arrow_up:"
-    open-pull-requests-limit: 50
+    assignees:
+      - "frazzer951"
 
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "daily"
     allow:
-      - dependency-type: "all"
+      - dependency-type: "direct"
     commit-message:
       prefix: ":arrow_up:"
-    open-pull-requests-limit: 50
+    assignees:
+      - "frazzer951"
