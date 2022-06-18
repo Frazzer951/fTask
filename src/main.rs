@@ -4,19 +4,13 @@ use clap::{Parser, Subcommand};
 use platform_dirs::AppDirs;
 use rusqlite::{params, Connection, Result};
 
-/// Get a line of userinput
+/// Get a line of user input
 fn get_user_input() -> String {
     let mut s = String::new();
     let _ = stdout().flush();
     stdin().read_line(&mut s).expect("Did not enter a correct string");
-    // Remove any endline characters
-    if let Some('\n') = s.chars().next_back() {
-        s.pop();
-    }
-    if let Some('\r') = s.chars().next_back() {
-        s.pop();
-    }
-    s
+    // Remove any end-line characters
+    String::from(s.trim())
 }
 
 /// Get a vector of all the tasks in the database
