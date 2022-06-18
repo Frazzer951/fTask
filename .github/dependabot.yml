@@ -8,7 +8,7 @@ updates:
     allow:
       - dependency-type: "direct"
     commit-message:
-      prefix: ":arrow_up:"
+      prefix: "chore:"
     assignees:
       - "frazzer951"
 
@@ -19,6 +19,6 @@ updates:
     allow:
       - dependency-type: "direct"
     commit-message:
-      prefix: ":arrow_up:"
+      prefix: "chore:"
     assignees:
       - "frazzer951"
