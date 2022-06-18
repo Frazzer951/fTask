@@ -23,14 +23,14 @@ fn get_user_input() -> String {
 fn get_all_tasks(conn: &Connection) -> Result<Vec<Task>, Box<dyn std::error::Error>> {
     // Query the database
     let mut stmt = conn.prepare("SELECT id, priority, name, description, completed FROM task")?;
-    // Get all the responces
+    // Get all the responses
     let task_iter = stmt.query_map([], |row| {
         Ok(Task {
-            id: row.get(0)?,
-            priority: row.get(1)?,
-            name: row.get(2)?,
+            id:          row.get(0)?,
+            priority:    row.get(1)?,
+            name:        row.get(2)?,
             description: row.get(3)?,
-            completed: row.get(4)?,
+            completed:   row.get(4)?,
         })
     })?;
     // Convert the responces into a vector of tasks
@@ -43,7 +43,12 @@ fn get_all_tasks(conn: &Connection) -> Result<Vec<Task>, Box<dyn std::error::Err
 }
 
 /// Print out all of the tasks
-fn print_all_tasks(conn: &Connection, all: bool, completed: bool, mut amount: u32) -> Result<(), Box<dyn std::error::Error>> {
+fn print_all_tasks(
+    conn: &Connection,
+    all: bool,
+    completed: bool,
+    mut amount: u32,
+) -> Result<(), Box<dyn std::error::Error>> {
     // Get all the tasks
     let task_iter = get_all_tasks(conn)?;
 
@@ -97,7 +102,7 @@ enum Commands {
     List {
         #[clap(short, long, group = "show")]
         /// Show all tasks
-        all: bool,
+        all:       bool,
         #[clap(short, long, group = "show")]
         /// Show completed tasks
         completed: bool,
@@ -106,13 +111,13 @@ enum Commands {
     AddTask {
         #[clap(short, long)]
         /// Name of the new task
-        name: Option<String>,
+        name:        Option<String>,
         #[clap(short, long)]
         /// Description of task
         description: Option<String>,
         #[clap(short, long)]
         /// Priority of the task
-        priority: Option<u32>,
+        priority:    Option<u32>,
     },
     /// Reset the tasks database
     Reset {},
@@ -141,11 +146,11 @@ enum Commands {
 
 #[derive(Debug)]
 struct Task {
-    id: u32,
-    priority: u32,
-    name: String,
+    id:          u32,
+    priority:    u32,
+    name:        String,
     description: String,
-    completed: bool,
+    completed:   bool,
 }
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -174,7 +179,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     match &cli.command {
         Commands::List { all, completed } => {
             print_all_tasks(&conn, *all, *completed, 0)?;
-        }
+        },
         Commands::AddTask {
             name,
             description,
@@ -206,11 +211,11 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 "INSERT INTO task (name, description, priority, completed) VALUES (?1, ?2, ?3, false)",
                 params![task_name, task_description, task_priority],
             )?;
-        }
+        },
         Commands::Reset {} => {
             let _ = conn.close();
             std::fs::remove_file(sqlite_path)?;
-        }
+        },
         Commands::Complete { ids } => {
             if !ids.is_empty() {
                 for id in ids {
@@ -222,7 +227,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 let id: u32 = get_user_input().parse()?;
                 conn.execute("UPDATE task SET completed = 1 WHERE id = ?1", params![id])?;
             }
-        }
+        },
 
         Commands::UnComplete { ids } => {
             if !ids.is_empty() {
@@ -235,7 +240,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 let id: u32 = get_user_input().parse()?;
                 conn.execute("UPDATE task SET completed = 0 WHERE id = ?1", params![id])?;
             }
-        }
+        },
         Commands::Remove { ids } => {
             if !ids.is_empty() {
                 for id in ids {
@@ -247,10 +252,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 let id: u32 = get_user_input().parse()?;
                 conn.execute("DELETE FROM task WHERE id = ?1", params![id])?;
             }
-        }
+        },
         Commands::Next { number } => {
             print_all_tasks(&conn, false, false, *number)?;
-        }
+        },
     }
 
     Ok(())
