@@ -1,7 +1,6 @@
 use std::io::{stdin, stdout, Write};
 
 use clap::{Parser, Subcommand};
-use platform_dirs::AppDirs;
 use rusqlite::{params, Connection, Result};
 
 /// Get a line of user input
@@ -151,8 +150,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let cli = Cli::parse();
 
     // Create SQLite directory
-    let app_dirs = AppDirs::new(Some("ftask"), false).unwrap();
-    let mut sqlite_path = app_dirs.data_dir;
+    let mut config_dir = dirs::config_dir().unwrap();
+    config_dir.push("ftask");
+    let mut sqlite_path = config_dir;
     std::fs::create_dir_all(&sqlite_path)?;
     sqlite_path.push("tasks.sqlite");
     let conn = Connection::open(&sqlite_path)?;
