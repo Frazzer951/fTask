@@ -31,7 +31,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         Commands::List { all, completed } => {
             print_all_tasks(&db.conn, *all, *completed, 0)?;
         },
-        Commands::AddTask {
+        Commands::New {
             name,
             description,
             priority,

@@ -20,7 +20,7 @@ pub enum Commands {
         completed: bool,
     },
     /// Add a new task
-    AddTask {
+    New {
         #[clap(short, long)]
         /// Name of the new task
         name:        Option<String>,
