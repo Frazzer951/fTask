@@ -3,11 +3,10 @@ name: Release
 on:
   push:
     tags:
-      - '*'
+      - "*"
 
 env:
   binary: ftask
-
 
 jobs:
   # Build for Linux
