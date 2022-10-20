@@ -1,8 +1,8 @@
-use clap::{Parser, Subcommand};
+use clap::{arg, command, Parser, Subcommand};
 
 #[derive(Parser)]
-#[clap(version, about, long_about = None)]
-#[clap(propagate_version = true)]
+#[command(version, about, long_about = None)]
+#[command(propagate_version = true)]
 pub struct Cli {
     #[clap(subcommand)]
     pub command: Commands,
@@ -12,22 +12,22 @@ pub struct Cli {
 pub enum Commands {
     /// List tasks
     List {
-        #[clap(short, long, group = "show")]
+        #[arg(short, long, group = "show")]
         /// Show all tasks
         all:       bool,
-        #[clap(short, long, group = "show")]
+        #[arg(short, long, group = "show")]
         /// Show completed tasks
         completed: bool,
     },
     /// Add a new task
     New {
-        #[clap(short, long)]
+        #[arg(short, long)]
         /// Name of the new task
         name:        Option<String>,
-        #[clap(short, long)]
+        #[arg(short, long)]
         /// Description of task
         description: Option<String>,
-        #[clap(short, long)]
+        #[arg(short, long)]
         /// Priority of the task
         priority:    Option<u32>,
     },
@@ -50,7 +50,7 @@ pub enum Commands {
     },
     /// Get the next task
     Next {
-        #[clap(default_value = "1")]
+        #[arg(default_value = "1")]
         /// Number of tasks to display
         number: u32,
     },
