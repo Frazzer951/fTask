@@ -30,4 +30,4 @@ jobs:
           git config --global user.name 'Frazzer951'
           git config --global user.email 'luke343279@gmail.com'
           [[ -n $(git status -s) ]] && git commit -am "docs: update CHANGELOG"
-          git push
+          git push origin main
