@@ -10,12 +10,19 @@
 
 - Update release notes
 - Update CHANGELOG
+- Update CHANGELOG
 
 ### Miscellaneous Tasks
 
 - Update dependencies
 - Update workflows
 - Update dependencies
+- Bump Version
+
+### Other
+
+- Merge branch 'main' of https://github.com/Frazzer951/fTask
+
 
 ### Refactor
 
