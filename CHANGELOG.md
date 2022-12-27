@@ -4,11 +4,18 @@
 
 ### Continuous Integration
 
+- Update changelog on release
+
+## [0.3.0] - 2022-12-27
+
+### Continuous Integration
+
 - Remove codecov
 
 ### Documentation
 
 - Update release notes
+- Update CHANGELOG
 - Update CHANGELOG
 - Update CHANGELOG
 - Update CHANGELOG
