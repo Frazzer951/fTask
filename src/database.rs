@@ -30,9 +30,6 @@ impl Database {
         )
         .expect("Failed to create task database");
 
-        Database {
-            conn,
-            path: sqlite_path,
-        }
+        Database { conn, path: sqlite_path }
     }
 }

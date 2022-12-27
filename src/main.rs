@@ -68,8 +68,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 .collect::<Vec<_>>();
 
             for id in ids {
-                db.conn
-                    .execute("UPDATE task SET completed = 0 WHERE id = ?", params![id])?;
+                db.conn.execute("UPDATE task SET completed = 0 WHERE id = ?", params![id])?;
             }
         },
         Some(("complete", sub_matches)) => {
@@ -81,8 +80,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 .collect::<Vec<_>>();
 
             for id in ids {
-                db.conn
-                    .execute("UPDATE task SET completed = 1 WHERE id = ?", params![id])?;
+                db.conn.execute("UPDATE task SET completed = 1 WHERE id = ?", params![id])?;
             }
         },
         Some(("remove", sub_matches)) => {
@@ -102,9 +100,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             }
         },
         Some(("next", sub_matches)) => {
-            let number = *sub_matches
-                .get_one::<usize>("num_tasks")
-                .expect("`num_tasks` is required");
+            let number = *sub_matches.get_one::<usize>("num_tasks").expect("`num_tasks` is required");
             print_all_tasks(&db.conn, false, false, number)?;
         },
         Some(("delete_all", sub_matches)) => {
