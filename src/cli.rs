@@ -1,57 +1,98 @@
-use clap::{arg, command, Parser, Subcommand};
+use clap::{command, value_parser, Arg, ArgAction, Command};
 
-#[derive(Parser)]
-#[command(version, about, long_about = None)]
-#[command(propagate_version = true)]
-pub struct Cli {
-    #[clap(subcommand)]
-    pub command: Commands,
+pub fn cli() -> Command {
+    command!()
+        .subcommand_required(true)
+        .arg_required_else_help(true)
+        .subcommands(vec![
+            subcommand_list(),
+            subcommand_new(),
+            subcommand_reset(),
+            subcommand_complete(),
+            subcommand_remove(),
+            subcommand_next(),
+            subcommand_delete_all(),
+        ])
 }
 
-#[derive(Subcommand)]
-pub enum Commands {
-    /// List tasks
-    List {
-        #[arg(short, long, group = "show")]
-        /// Show all tasks
-        all:       bool,
-        #[arg(short, long, group = "show")]
-        /// Show completed tasks
-        completed: bool,
-    },
-    /// Add a new task
-    New {
-        #[arg(short, long)]
-        /// Name of the new task
-        name:        Option<String>,
-        #[arg(short, long)]
-        /// Description of task
-        description: Option<String>,
-        #[arg(short, long)]
-        /// Priority of the task
-        priority:    Option<u32>,
-    },
-    /// Reset the tasks database
-    Reset {},
-    /// Complete a task
-    Complete {
-        /// IDs of tasks (Optional)
-        ids: Vec<u32>,
-    },
-    /// Mark a task as incomplete
-    UnComplete {
-        /// IDs of tasks (Optional)
-        ids: Vec<u32>,
-    },
-    /// Remove a task
-    Remove {
-        /// IDs of tasks (Optional)
-        ids: Vec<u32>,
-    },
-    /// Get the next task
-    Next {
-        #[arg(default_value = "1")]
-        /// Number of tasks to display
-        number: u32,
-    },
+fn subcommand_list() -> Command {
+    Command::new("list")
+        .about("List tasks, if no flags are given, only incomplete tasks will be displayed")
+        .args(&[
+            Arg::new("all")
+                .short('a')
+                .long("all")
+                .help("Show all tasks")
+                .action(ArgAction::SetTrue)
+                .group("show"),
+            Arg::new("completed")
+                .short('c')
+                .long("completed")
+                .help("Show completed tasks")
+                .action(ArgAction::SetTrue)
+                .group("show"),
+        ])
+}
+
+fn subcommand_new() -> Command {
+    Command::new("new").about("Add a new Task").args(&[
+        Arg::new("name").short('n').long("name"),
+        Arg::new("desc").short('d').long("description"),
+        Arg::new("priority")
+            .short('p')
+            .long("priority")
+            .help("The priority of the task, the lower the number, the higher its priority")
+            .value_parser(value_parser!(u32)),
+    ])
+}
+
+fn subcommand_reset() -> Command {
+    Command::new("reset")
+        .about("Reset tasks by IDs. This will reset their completed state")
+        .args(&[Arg::new("ids")
+            .help("Give a list of IDs that will be reset")
+            .num_args(1..)
+            .required(true)
+            .value_parser(value_parser!(u32))
+            .action(ArgAction::Append)])
+}
+
+fn subcommand_complete() -> Command {
+    Command::new("complete")
+        .about("Complete tasks by IDs. This will set their states to completed")
+        .args(&[Arg::new("ids")
+            .help("Give a list of IDs that will be reset")
+            .num_args(1..)
+            .required(true)
+            .value_parser(value_parser!(u32))
+            .action(ArgAction::Append)])
+}
+
+fn subcommand_remove() -> Command {
+    Command::new("remove")
+        .about("Remove tasks by IDs. This will delete the tasks from the database")
+        .args(&[
+            Arg::new("ids")
+                .help("Give a list of IDs that will be reset")
+                .num_args(1..)
+                .required(true)
+                .value_parser(value_parser!(u32))
+                .action(ArgAction::Append),
+            Arg::new("force").short('f').long("force").action(ArgAction::SetTrue),
+        ])
+}
+
+fn subcommand_next() -> Command {
+    Command::new("next")
+        .about("Display the next task(s) by priority")
+        .args(&[Arg::new("num_tasks")
+            .help("The number of tasks to display")
+            .value_parser(value_parser!(usize))
+            .default_value("1")])
+}
+
+fn subcommand_delete_all() -> Command {
+    Command::new("delete_all")
+        .about("Removes all tasks from the database")
+        .args(&[Arg::new("force").short('f').long("force").action(ArgAction::SetTrue)])
 }

@@ -8,6 +8,7 @@ repository = "https://github.com/Frazzer951/fTask"
 version = "0.2.0"
 
 [dependencies]
-clap = {version = "4.0", features = ["derive"]}
+clap = {version = "4.0", features = ["cargo"]}
+dialoguer = "0.10"
 dirs = "4.0"
 rusqlite = {version = "0.28", features = ["bundled"]}

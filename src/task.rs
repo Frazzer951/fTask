@@ -7,11 +7,11 @@ pub fn get_all_tasks(conn: &Connection) -> Result<Vec<Task>, Box<dyn std::error:
     // Get all the responses
     let task_iter = stmt.query_map([], |row| {
         Ok(Task {
-            id:          row.get(0)?,
-            priority:    row.get(1)?,
-            name:        row.get(2)?,
+            id: row.get(0)?,
+            priority: row.get(1)?,
+            name: row.get(2)?,
             description: row.get(3)?,
-            completed:   row.get(4)?,
+            completed: row.get(4)?,
         })
     })?;
     // Convert the responces into a vector of tasks
@@ -28,33 +28,31 @@ pub fn print_all_tasks(
     conn: &Connection,
     all: bool,
     completed: bool,
-    mut amount: u32,
+    mut amount: usize,
 ) -> Result<(), Box<dyn std::error::Error>> {
     // Get all the tasks
     let task_iter = get_all_tasks(conn)?;
 
     if amount == 0 {
-        amount = task_iter.len() as u32;
+        amount = task_iter.len();
     }
 
     // Get the length of the longest name for formatting
     let mut length = 0;
-    let mut i = 0;
-    for task in &task_iter {
-        if i >= amount {
+    for (index, task) in task_iter.iter().enumerate() {
+        if index >= amount {
             break;
         }
+
         if all || (completed == task.completed) {
             length = std::cmp::max(length, task.name.len());
-            i += 1;
         }
     }
 
     // Print out all of the tasks
     println!("ID-PR: {:0length$} - DESCRIPTION", "NAME");
-    i = 0;
-    for task in task_iter {
-        if i >= amount {
+    for (index, task) in task_iter.iter().enumerate() {
+        if index >= amount {
             break;
         }
         if all || (completed == task.completed) {
@@ -62,7 +60,6 @@ pub fn print_all_tasks(
                 "{:02}-{:02}: {:0length$} - {}",
                 task.id, task.priority, task.name, task.description
             );
-            i += 1;
         }
     }
 
@@ -71,9 +68,9 @@ pub fn print_all_tasks(
 
 #[derive(Debug)]
 pub struct Task {
-    id:          u32,
-    priority:    u32,
-    name:        String,
+    id: u32,
+    priority: u32,
+    name: String,
     description: String,
-    completed:   bool,
+    completed: bool,
 }

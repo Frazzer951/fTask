@@ -1,9 +1,8 @@
-use std::io::{stdin, stdout, Write};
-
-use clap::Parser;
+use dialoguer::Confirm;
+use dialoguer::{theme::ColorfulTheme, Input};
 use rusqlite::{params, Result};
 
-use crate::cli::{Cli, Commands};
+use crate::cli::cli;
 use crate::database::Database;
 use crate::task::print_all_tasks;
 
@@ -11,50 +10,47 @@ mod cli;
 mod database;
 mod task;
 
-/// Get a line of user input
-fn get_user_input() -> String {
-    let mut s = String::new();
-    let _ = stdout().flush();
-    stdin().read_line(&mut s).expect("Did not enter a correct string");
-    // Remove any end-line characters
-    String::from(s.trim())
-}
-
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let cli = Cli::parse();
+    //let cli = Cli::parse();
+    let matches = cli().get_matches();
 
     // Get Database connection
     let db = Database::new();
 
     // Run the specified command
-    match &cli.command {
-        Commands::List { all, completed } => {
-            print_all_tasks(&db.conn, *all, *completed, 0)?;
+    match matches.subcommand() {
+        Some(("list", sub_matches)) => {
+            let all = sub_matches.get_flag("all");
+            let completed = sub_matches.get_flag("completed");
+            print_all_tasks(&db.conn, all, completed, 0)?;
         },
-        Commands::New {
-            name,
-            description,
-            priority,
-        } => {
+        Some(("new", sub_matches)) => {
+            let name = sub_matches.get_one::<String>("name").cloned();
+            let desc = sub_matches.get_one::<String>("desc").cloned();
+            let priority = sub_matches.get_one::<u32>("priority").cloned();
+
             let task_name = if let Some(name) = name {
-                name.to_string()
+                name
             } else {
-                print!("Enter task name: ");
-                get_user_input()
+                Input::with_theme(&ColorfulTheme::default())
+                    .with_prompt("Task Name")
+                    .interact_text()?
             };
 
-            let task_description = if let Some(description) = description {
-                description.to_string()
+            let task_description = if let Some(description) = desc {
+                description
             } else {
-                print!("Enter task description: ");
-                get_user_input()
+                Input::with_theme(&ColorfulTheme::default())
+                    .with_prompt("Task Description")
+                    .interact_text()?
             };
 
             let task_priority: u32 = if let Some(priority) = priority {
-                *priority
+                priority
             } else {
-                print!("Enter task priority (Lower is Higher Priority): ");
-                get_user_input().parse()?
+                Input::with_theme(&ColorfulTheme::default())
+                    .with_prompt("Task Priority (Lower Value is Higher Priority)")
+                    .interact_text()?
             };
 
             // Insert task into database
@@ -63,54 +59,67 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 params![task_name, task_description, task_priority],
             )?;
         },
-        Commands::Reset {} => {
-            let _ = db.conn.close();
-            std::fs::remove_file(db.path)?;
-        },
-        Commands::Complete { ids } => {
-            if !ids.is_empty() {
-                for id in ids {
-                    db.conn
-                        .execute("UPDATE task SET completed = 1 WHERE id = ?1", params![id])?;
-                }
-            } else {
-                print_all_tasks(&db.conn, false, false, 0)?;
-                print!("Enter ID of task to complete: ");
-                let id: u32 = get_user_input().parse()?;
-                db.conn
-                    .execute("UPDATE task SET completed = 1 WHERE id = ?1", params![id])?;
-            }
-        },
+        Some(("reset", sub_matches)) => {
+            let ids = sub_matches
+                .get_many::<u32>("ids")
+                .expect("`IDs` is required")
+                .into_iter()
+                .copied()
+                .collect::<Vec<_>>();
 
-        Commands::UnComplete { ids } => {
-            if !ids.is_empty() {
-                for id in ids {
-                    db.conn
-                        .execute("UPDATE task SET completed = 0 WHERE id = ?1", params![id])?;
-                }
-            } else {
-                print_all_tasks(&db.conn, false, true, 0)?;
-                print!("Enter ID of task to complete: ");
-                let id: u32 = get_user_input().parse()?;
+            for id in ids {
                 db.conn
-                    .execute("UPDATE task SET completed = 0 WHERE id = ?1", params![id])?;
+                    .execute("UPDATE task SET completed = 0 WHERE id = ?", params![id])?;
             }
         },
-        Commands::Remove { ids } => {
-            if !ids.is_empty() {
-                for id in ids {
-                    db.conn.execute("DELETE FROM task WHERE id = ?1", params![id])?;
+        Some(("complete", sub_matches)) => {
+            let ids = sub_matches
+                .get_many::<u32>("ids")
+                .expect("`IDs` is required")
+                .into_iter()
+                .copied()
+                .collect::<Vec<_>>();
+
+            for id in ids {
+                db.conn
+                    .execute("UPDATE task SET completed = 1 WHERE id = ?", params![id])?;
+            }
+        },
+        Some(("remove", sub_matches)) => {
+            let ids = sub_matches
+                .get_many::<u32>("ids")
+                .expect("`IDs` is required")
+                .into_iter()
+                .copied()
+                .collect::<Vec<_>>();
+            let force = sub_matches.get_flag("force");
+
+            for id in ids {
+                if !force && !Confirm::new().with_prompt(format!("Delete task {id}?")).interact()? {
+                    continue;
                 }
-            } else {
-                print_all_tasks(&db.conn, true, false, 0)?;
-                print!("Enter ID of task to remove: ");
-                let id: u32 = get_user_input().parse()?;
-                db.conn.execute("DELETE FROM task WHERE id = ?1", params![id])?;
+                db.conn.execute("DELETE FROM task WHERE id = ?", params![id])?;
             }
         },
-        Commands::Next { number } => {
-            print_all_tasks(&db.conn, false, false, *number)?;
+        Some(("next", sub_matches)) => {
+            let number = *sub_matches
+                .get_one::<usize>("num_tasks")
+                .expect("`num_tasks` is required");
+            print_all_tasks(&db.conn, false, false, number)?;
         },
+        Some(("delete_all", sub_matches)) => {
+            let force = sub_matches.get_flag("force");
+            if force {
+                let _ = db.conn.close();
+                std::fs::remove_file(db.path)?;
+            } else {
+                println!("This Will Delete the current database and remove all tasks. Pass the force flag with -f or --force to run this operation")
+            }
+        },
+        Some((command, _sub_matches)) => {
+            println!("Missing match for the command {command}");
+        },
+        _ => unreachable!(),
     }
 
     Ok(())
