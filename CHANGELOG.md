@@ -9,12 +9,17 @@
 ### Documentation
 
 - Update release notes
+- Update CHANGELOG
 
 ### Miscellaneous Tasks
 
 - Update dependencies
 - Update workflows
 - Update dependencies
+
+### Refactor
+
+- ReWrite all of the CLI interface
 
 ## [0.2.0] - 2022-07-11
 
