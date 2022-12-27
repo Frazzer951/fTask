@@ -8,6 +8,6 @@ repository = "https://github.com/Frazzer951/fTask"
 version = "0.2.0"
 
 [dependencies]
-clap = { version = "4.0.17", features = ["derive"] }
-dirs = "4.0.0"
-rusqlite = { version = "0.28.0", features = ["bundled"] }
+clap = {version = "4.0", features = ["derive"]}
+dirs = "4.0"
+rusqlite = {version = "0.28", features = ["bundled"]}
