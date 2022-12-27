@@ -11,6 +11,7 @@
 - Update release notes
 - Update CHANGELOG
 - Update CHANGELOG
+- Update CHANGELOG
 
 ### Miscellaneous Tasks
 
@@ -27,6 +28,10 @@
 ### Refactor
 
 - ReWrite all of the CLI interface
+
+### Styling
+
+- Format code
 
 ## [0.2.0] - 2022-07-11
 
